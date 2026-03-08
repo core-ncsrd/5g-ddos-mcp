@@ -1,0 +1,52 @@
+# Persistent Volume Claims for dataset, models, and Ollama model weights
+# Adjust storageClassName and capacity for your cluster.
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: 5g-ddos-data-pvc
+  namespace: 5g-ddos-mcp
+  labels:
+    app.kubernetes.io/name: 5g-ddos-mcp
+    app.kubernetes.io/component: dataset
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi    # ~620 MB dataset + working space
+  storageClassName: standard   # Replace with your cluster's storage class
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: 5g-ddos-models-pvc
+  namespace: 5g-ddos-mcp
+  labels:
+    app.kubernetes.io/name: 5g-ddos-mcp
+    app.kubernetes.io/component: ml-models
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi   # XGBoost model artifacts + incident history
+  storageClassName: standard
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-models-pvc
+  namespace: 5g-ddos-mcp
+  labels:
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/component: llm-weights
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi   # LLM weight files (llama3.2=3GB, mistral=7GB, phi4=14GB)
+  storageClassName: standard

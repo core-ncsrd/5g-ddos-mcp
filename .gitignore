@@ -1,0 +1,39 @@
+# Environment
+.env
+*.env.local
+
+# Dataset files (DO NOT commit – ~620 MB)
+data/*.csv
+data/*.xlsx
+data/*.parquet
+
+# Trained model artifacts (DO NOT commit – regenerate via train_model.py)
+models/*.pkl
+models/*.joblib
+models/*.json
+models/*.bin
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.uv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Docker
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

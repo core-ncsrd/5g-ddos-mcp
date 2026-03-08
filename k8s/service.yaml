@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: 5g-ddos-mcp-service
+  namespace: 5g-ddos-mcp
+  labels:
+    app.kubernetes.io/name: 5g-ddos-mcp
+    app.kubernetes.io/component: mcp-server
+spec:
+  selector:
+    app: 5g-ddos-mcp-server
+  ports:
+    - name: mcp
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
+  type: ClusterIP
+
+---
+# Ollama service (accessible to MCP server within cluster)
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-service
+  namespace: 5g-ddos-mcp
+  labels:
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/component: llm-backend
+spec:
+  selector:
+    app: ollama
+  ports:
+    - name: ollama-api
+      port: 11434
+      targetPort: 11434
+      protocol: TCP
+  type: ClusterIP

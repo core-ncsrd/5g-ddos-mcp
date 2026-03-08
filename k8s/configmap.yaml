@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: 5g-ddos-mcp-config
+  namespace: 5g-ddos-mcp
+  labels:
+    app.kubernetes.io/name: 5g-ddos-mcp
+    app.kubernetes.io/component: mcp-server
+data:
+  # MCP Server settings
+  MCP_HOST: "0.0.0.0"
+  MCP_PORT: "8000"
+  LOG_LEVEL: "INFO"
+  PYTHONPATH: "/app"
+  PYTHONUNBUFFERED: "1"
+
+  # Detection threshold
+  ANOMALY_THRESHOLD: "0.5"
+
+  # LLM settings (override via Secret for API keys)
+  LLM_MAX_TOKENS: "2048"
+  LLM_TEMPERATURE: "0.3"
+
+  # Ollama URL (when running Ollama as a sidecar or separate service)
+  OLLAMA_BASE_URL: "http://ollama-service:11434"
+  OLLAMA_MODEL: "llama3.2"
+
+  # Claude model selection (API key comes from Secret)
+  CLAUDE_MODEL: "claude-sonnet-4-6"

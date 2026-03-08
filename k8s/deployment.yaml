@@ -1,0 +1,182 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 5g-ddos-mcp-server
+  namespace: 5g-ddos-mcp
+  labels:
+    app.kubernetes.io/name: 5g-ddos-mcp
+    app.kubernetes.io/component: mcp-server
+    app.kubernetes.io/version: "1.0.0"
+    project: privateer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: 5g-ddos-mcp-server
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: 5g-ddos-mcp-server
+        app.kubernetes.io/name: 5g-ddos-mcp
+        app.kubernetes.io/component: mcp-server
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      initContainers:
+        # Wait for models PVC to be populated (if using model training job)
+        - name: check-models
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              if [ -f /app/models/xgb_binary_classifier.pkl ]; then
+                echo "ML model artifacts found – full detection mode"
+              else
+                echo "ML model artifacts not found – will use heuristic mode"
+                echo "Run: kubectl apply -f k8s/train-job.yaml to train the model"
+              fi
+          volumeMounts:
+            - name: models-volume
+              mountPath: /app/models
+              readOnly: true
+
+      containers:
+        - name: mcp-server
+          image: 5g-ddos-mcp:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: mcp
+              protocol: TCP
+
+          envFrom:
+            - configMapRef:
+                name: 5g-ddos-mcp-config
+
+          env:
+            # LLM backend selection (override ConfigMap if needed)
+            - name: LLM_BACKEND
+              value: "claude"   # or: ollama | openai_compatible
+
+            # Secrets
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: 5g-ddos-mcp-secrets
+                  key: ANTHROPIC_API_KEY
+                  optional: true
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: 5g-ddos-mcp-secrets
+                  key: OPENAI_API_KEY
+                  optional: true
+          volumeMounts:
+            - name: data-volume
+              mountPath: /app/data
+              readOnly: true
+            - name: models-volume
+              mountPath: /app/models
+              readOnly: false
+
+          resources:
+            requests:
+              cpu:    "500m"
+              memory: "512Mi"
+            limits:
+              cpu:    "2000m"
+              memory: "2Gi"
+
+          livenessProbe:
+            exec:
+              command:
+                - python
+                - -c
+                - "from src.config import server_config; print('OK')"
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            failureThreshold: 3
+
+          readinessProbe:
+            exec:
+              command:
+                - python
+                - -c
+                - "from src.config import server_config; print('OK')"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: 5g-ddos-data-pvc
+        - name: models-volume
+          persistentVolumeClaim:
+            claimName: 5g-ddos-models-pvc
+
+      restartPolicy: Always
+
+---
+# ── Ollama Deployment (optional – for open-source LLMs) ──────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: 5g-ddos-mcp
+  labels:
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/component: llm-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+        app.kubernetes.io/name: ollama
+    spec:
+      containers:
+        - name: ollama
+          image: ollama/ollama:latest
+          ports:
+            - containerPort: 11434
+              name: ollama-api
+          volumeMounts:
+            - name: ollama-models
+              mountPath: /root/.ollama
+          resources:
+            requests:
+              cpu:    "1000m"
+              memory: "4Gi"
+            limits:
+              cpu:    "4000m"
+              memory: "16Gi"
+          # Uncomment for GPU:
+          # resources:
+          #   limits:
+          #     nvidia.com/gpu: "1"
+          livenessProbe:
+            httpGet:
+              path: /api/tags
+              port: 11434
+            initialDelaySeconds: 30
+            periodSeconds: 30
+
+      volumes:
+        - name: ollama-models
+          persistentVolumeClaim:
+            claimName: ollama-models-pvc
