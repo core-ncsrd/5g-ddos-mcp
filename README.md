@@ -337,9 +337,7 @@ Attack labels (`attack_number` column): `0` benign · `1` SYN flood · `2` UDP f
 
 | EU Project | Integration |
 |------------|-------------|
-| **PRIVATEER** | Dataset provenance; tools serve as WP deliverables |
-| **OASEES** | Federated learning partition by cell; edge node deployment via K8s |
-| **Q-NEXUS/Q-VERSE** | Slice threat profiling applicable to quantum-network slices |
+| **MARE** | Agentic AI for 5G Security |
 
 ---
 
