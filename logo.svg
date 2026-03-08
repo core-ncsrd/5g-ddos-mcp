@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="520" height="120">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#1e90ff"/>
+      <stop offset="100%" stop-color="#0055cc"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#00c8ff" stop-opacity="0.15"/>
+      <stop offset="50%"  stop-color="#00c8ff" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#00c8ff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Dark background pill -->
+  <rect x="0" y="0" width="520" height="120" rx="14" fill="#0d1117"/>
+  <rect x="0" y="0" width="520" height="120" rx="14" fill="url(#glowGrad)"/>
+
+  <!-- Shield body -->
+  <path d="M44 18 L72 18 L72 58 Q72 78 58 88 Q44 78 44 58 Z"
+        fill="url(#shieldGrad)" opacity="0.95"/>
+  <!-- Shield inner highlight -->
+  <path d="M49 23 L67 23 L67 57 Q67 72 58 80 Q49 72 49 57 Z"
+        fill="none" stroke="#5ab4ff" stroke-width="1.2" opacity="0.5"/>
+
+  <!-- Signal arcs (wifi-style, right side of shield) -->
+  <g filter="url(#glow)" stroke="#00c8ff" stroke-linecap="round" fill="none">
+    <path d="M76 42 Q85 34 85 54" stroke-width="2.2" opacity="0.9"/>
+    <path d="M80 36 Q94 26 94 54" stroke-width="2"   opacity="0.65"/>
+    <path d="M84 30 Q103 18 103 54" stroke-width="1.8" opacity="0.4"/>
+  </g>
+
+  <!-- Shield bolt/check -->
+  <polyline points="52,52 56,60 64,44"
+            fill="none" stroke="#ffffff" stroke-width="2.8"
+            stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+
+  <!-- 5G text badge -->
+  <rect x="28" y="72" width="30" height="14" rx="4" fill="#0055cc" opacity="0.9"/>
+  <text x="43" y="83" font-family="'Segoe UI', Arial, sans-serif"
+        font-size="9" font-weight="700" fill="#ffffff" text-anchor="middle"
+        letter-spacing="0.5">5G</text>
+
+  <!-- Main title -->
+  <text x="118" y="52" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+        font-size="30" font-weight="700" fill="#e6edf3" letter-spacing="-0.5">
+    5g-ddos-mcp
+  </text>
+
+  <!-- Subtitle -->
+  <text x="119" y="74" font-family="'Segoe UI', Arial, sans-serif"
+        font-size="13" fill="#8b949e" letter-spacing="0.2">
+    Agentic 5G DDoS Detection · Claude · Ollama · OpenAI-compatible
+  </text>
+
+  <!-- Divider line -->
+  <line x1="118" y1="83" x2="490" y2="83" stroke="#21262d" stroke-width="1"/>
+
+  <!-- Tag chips -->
+  <rect x="119" y="90" width="52" height="16" rx="4" fill="#1e3a5f" opacity="0.9"/>
+  <text x="145" y="102" font-family="'Segoe UI', Arial, sans-serif"
+        font-size="9" fill="#58a6ff" text-anchor="middle">XGBoost</text>
+
+  <rect x="177" y="90" width="40" height="16" rx="4" fill="#1e3a2f" opacity="0.9"/>
+  <text x="197" y="102" font-family="'Segoe UI', Arial, sans-serif"
+        font-size="9" fill="#3fb950" text-anchor="middle">MCP</text>
+
+  <rect x="223" y="90" width="58" height="16" rx="4" fill="#3a1e1e" opacity="0.9"/>
+  <text x="252" y="102" font-family="'Segoe UI', Arial, sans-serif"
+        font-size="9" fill="#f85149" text-anchor="middle">PRIVATEER</text>
+
+  <rect x="287" y="90" width="60" height="16" rx="4" fill="#2a1e3a" opacity="0.9"/>
+  <text x="317" y="102" font-family="'Segoe UI', Arial, sans-serif"
+        font-size="9" fill="#bc8cff" text-anchor="middle">CC BY 4.0</text>
+
+  <!-- Right-side DOI label -->
+  <text x="488" y="102" font-family="'Segoe UI', Arial, sans-serif"
+        font-size="8.5" fill="#484f58" text-anchor="end">
+    DOI 10.5281/zenodo.13900057
+  </text>
+</svg>
