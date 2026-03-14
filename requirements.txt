@@ -24,6 +24,20 @@ httpx>=0.27.0
 # Class balancing (optional but recommended – proven on this dataset)
 imbalanced-learn>=0.12.0
 
+# CLI
+typer[all]>=0.12.0
+rich>=13.0.0
+
+# Agentic frameworks (install the ones you need)
+# LangGraph ReAct agent (any backend):
+# langchain>=0.3.0
+# langchain-core>=0.3.0
+# langgraph>=0.2.0
+# Plus one LangChain model integration:
+# langchain-anthropic>=0.3.0     # for Claude via LangGraph
+# langchain-openai>=0.3.0        # for OpenAI / vLLM via LangGraph
+# langchain-ollama>=0.2.0        # for Ollama via LangGraph
+
 # Utilities
 python-dotenv>=1.0.0
 pydantic>=2.0.0

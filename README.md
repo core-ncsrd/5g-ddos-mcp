@@ -254,6 +254,96 @@ See [`data/DATASET_INSTRUCTIONS.md`](data/DATASET_INSTRUCTIONS.md) for full deta
 
 ---
 
+## CLI
+
+The `5g-ddos` command lets you run detections, query history, get recommendations, and manage the dataset directly from your terminal — no MCP client required.
+
+```bash
+pip install -e ".[all]"   # installs the 5g-ddos entry point
+5g-ddos --help
+```
+
+### `server` — Start the MCP server
+
+```bash
+5g-ddos server                          # uses LLM_BACKEND from .env
+5g-ddos server --backend ollama --model phi4
+5g-ddos server --backend claude
+```
+
+### `detect` — Classify 5G telemetry
+
+```bash
+# Inline single-sample detection
+5g-ddos detect --ul-bitrate 9500000 --dl-bitrate 1200000 \
+               --ul-retx 0.42 --pdu-session-setup-request 95 \
+               --ue-id UE-007
+
+# Batch detection from a CSV file (matches NCSRD dataset schema)
+5g-ddos detect --input telemetry.csv --format table
+5g-ddos detect --input telemetry.csv --format csv --output results.csv
+
+# Output formats: table (default) | json | csv
+```
+
+### `explain` — Generate an incident report
+
+```bash
+5g-ddos explain --attack-type gtp_u_flood --severity critical \
+                --slice URLLC --ue-ip 10.45.0.3 --cells "1,2"
+
+5g-ddos explain --attack-type syn_flood --severity high \
+                --imeisv 3533890312345678 --format json --output report.json
+```
+
+### `recommend` — Get mitigation recommendations
+
+```bash
+5g-ddos recommend --attack-type udp_flood --severity high --slice eMBB
+
+# Preview auto-execute REST API commands (does not call any API without RESPONSE_API_URL set)
+5g-ddos recommend --attack-type gtp_u_flood --severity critical \
+                  --ue-ip 10.45.0.5 --imeisv 3533890312345678 \
+                  --auto-execute
+```
+
+### `history` — Query incident history
+
+```bash
+5g-ddos history                                  # last 10 incidents
+5g-ddos history --attack-type syn_flood --limit 20
+5g-ddos history --severity critical --slice URLLC --time-range 24
+```
+
+### `train` — Train the XGBoost classifier
+
+```bash
+5g-ddos train                     # full dataset (~5–15 min)
+5g-ddos train --nrows 100000      # quick smoke-test with 100k rows
+```
+
+### `dataset` — Manage the NCSRD dataset
+
+```bash
+5g-ddos dataset status            # show which files are present / missing
+5g-ddos dataset download          # print download instructions
+5g-ddos dataset download --auto   # run scripts/download_dataset.sh automatically
+```
+
+### `version` — Show environment info
+
+```bash
+5g-ddos version
+# ┌──────────────────────┬───────────────────────────────┐
+# │ 5g-ddos-mcp          │ 1.0.0                         │
+# │ LLM Backend          │ claude (claude-sonnet-4-6)    │
+# │ ML Model             │ loaded (binary + multi-class) │
+# │ Dataset records      │ 7 files present               │
+# └──────────────────────┴───────────────────────────────┘
+```
+
+---
+
 ## Architecture
 
 ```
